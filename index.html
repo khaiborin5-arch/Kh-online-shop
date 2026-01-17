@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>KR Online Shop</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;700&display=swap" rel="stylesheet">
+
+ <style>
+    :root {
+      --primary-color: #d63384;
+      --secondary-color: #f783ac;
+      --soft-pink: #fde8ef;
+      --bg-color: #fff0f5;
+      --out-of-stock: #9e9e9e;
+    }
+
+    body { 
+      font-family: 'Kantumruy Pro', sans-serif; 
+      background: var(--bg-color); 
+      margin: 0; 
+      padding-bottom: 50px; 
+    }
+ 
+    /* Style សម្រាប់ផ្ទាំងចាប់ផ្តើម (Splash Screen) */
+    #splash-screen {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: 0.5s;
+    }
+    .welcome-logo { 
+      width: 180px; 
+      height: 180px; 
+      border-radius: 50%; 
+      margin-bottom: 20px; 
+      object-fit: cover;
+      border: 3px solid var(--secondary-color);
+      box-shadow: 0 4px 15px rgba(214, 51, 132, 0.3); 
+    }
+    .start-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 30px;
+      cursor: pointer;
+      font-family: 'Kantumruy Pro', sans-serif;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: 0.3s;
+      margin-bottom: 10px;
+    }
+    .start-btn:hover { transform: scale(1.05); background: #b0246b; }
+
+    /* Telegram Card Style */
+    .tg-card {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; background: white; width: 200px;
+      padding: 15px; border-radius: 20px; text-decoration: none;
+      border: 1px solid #f0f0f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+      transition: 0.3s; margin-top: 30px;
+    }
+    .tg-card:hover { transform: translateY(-5px); }
+    .tg-icon-circle {
+      background: var(--soft-pink); width: 45px; height: 45px;
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; margin-bottom: 8px;
+    }
+    .tg-icon-circle svg { width: 24px; height: 24px; fill: var(--primary-color); }
+    .tg-label { color: #444; font-weight: bold; font-size: 14px; }
+
+    #main-app { display: none; }
+
+    /* Navigation Tab */
+    .nav-tabs {
+      display: flex; justify-content: center; background: white;
+      position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .nav-tabs button {
+      flex: 1; padding: 15px; border: none; background: none;
+      font-size: 16px; font-weight: bold; color: #666; cursor: pointer;
+      border-bottom: 3px solid transparent; font-family: 'Kantumruy Pro', sans-serif;
+    }
+    .nav-tabs button.active { color: var(--primary-color); border-bottom: 3px solid var(--primary-color); }
+ 
+    h1 { color: var(--primary-color); text-align: center; margin-top: 20px; }
+    .section { display: none; padding: 20px; max-width: 800px; margin: auto; }
+    .active-section { display: block; }
+    .search-box { max-width: 400px; margin: 0 auto 20px; text-align: center; }
+    .search-box input { 
+      width: 100%; padding: 12px; border-radius: 25px; 
+      border: 1px solid var(--secondary-color); outline: none; 
+      font-family: 'Kantumruy Pro', sans-serif;
+    }
+    
+    .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; }
+    .product { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); text-align: center; position: relative; }
+    .product img { width: 100%; height: 150px; object-fit: contain; background: #fdfdfd; border-radius: 8px; }
+    .product p { margin: 10px 0 5px; font-weight: bold; }
+    .stock-status { font-size: 12px; margin-bottom: 10px; display: block; font-weight: bold; }
+    .in-stock { color: #28a745; }
+    
+    button.add-btn { 
+      background: var(--secondary-color); border: none; color: white; 
+      padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; 
+      font-family: 'Kantumruy Pro', sans-serif;
+    }
+    button.add-btn:hover { background: var(--primary-color); }
+ 
+    .cart-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 8px; border-bottom: 1px solid #eee; text-align: left; }
+    
+    /* Summary Style */
+    .summary-line { display: flex; justify-content: space-between; margin: 5px 0; font-size: 16px; }
+    .total-box { font-size: 20px; color: var(--primary-color); font-weight: bold; text-align: right; margin: 10px 0; border-top: 2px solid #f0f0f0; padding-top: 10px; }
+
+    input[type="text"], input[type="tel"], textarea, input[type="file"] { 
+      width: 100%; padding: 12px; margin: 8px 0 15px; border-radius: 8px; 
+      border: 1px solid #ddd; box-sizing: border-box; font-family: 'Kantumruy Pro', sans-serif;
+    }
+    .confirm-btn { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; font-family: 'Kantumruy Pro', sans-serif; }
+    .empty-cart-msg { text-align: center; color: #888; padding: 40px 0; }
+ </style>
+</head>
+<body>
+
+<div id="splash-screen">
+  <img src="https://i.ibb.co/zV87Z9Br/Screenshot-2026-01-08-141359.png" class="welcome-logo" alt="Logo">
+  <h2 style="margin-bottom: 25px; color: #333;">ស្វាគមន៍មកកាន់ KR Online Shop</h2>
+  <button class="start-btn" onclick="startApp()">ចូលទៅកាន់ហាង</button>
+  
+  <a href="https://t.me/khaiborin" target="_blank" class="tg-card">
+    <div class="tg-icon-circle">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18.717-.962 4.084-1.362 5.441-.168.575-.512.766-.713.785-.452.041-.796-.299-1.233-.586-.684-.449-1.071-.727-1.734-1.163-.767-.505-.27-.783.168-1.236.115-.119 2.106-1.932 2.143-2.091.005-.021.01-.1-.038-.142-.048-.042-.119-.028-.17-.016-.073.016-1.238.788-3.489 2.312-.331.226-.63.337-.897.33-.294-.007-.862-.167-1.284-.304-.516-.168-.927-.257-.891-.542.019-.149.224-.302.616-.46 2.408-1.048 4.012-1.74 4.814-2.076 2.29-.958 2.764-1.125 3.074-1.13.068-.001.22.016.32.098.083.069.106.163.114.234.011.085.019.245-.001.329z"/></svg>
+    </div>
+    <div class="tg-label">ព័ត៌មានបន្ថែម (Telegram)</div>
+  </a>
+</div>
+
+<div id="main-app">
+    <h1>KR Online Shop</h1>
+    <h1>សូមស្វាគមន៍មកកាន់គេហទំព័រយើង</h1>
+    <div class="nav-tabs">
+     <button id="tab-products" class="active" onclick="showSection('products-section')">🛍️ផលិតផល</button>
+     <button id="tab-cart" onclick="showSection('cart-section')">🛒កន្ត្រក (<span id="cart-count">0</span>)</button>
+    </div>
+     
+    <div id="products-section" class="section active-section">
+     <div class="search-box">
+        <input type="text" id="searchInput" placeholder="ស្វែងរកផលិតផល..." onkeyup="searchProduct()">
+     </div>
+     
+     <div class="products">
+        <div class="product" data-name="MN night cream">
+          <img src="https://i.ibb.co/MD6HvPdV/IMG-3781.jpg">
+          <p>MN night cream</p>
+          <span class="stock-status in-stock">● មានក្នុងស្តុក</span>
+          <p style="color: var(--primary-color); font-weight: bold;">$4</p>
+          <button class="add-btn" onclick="addToCart('MN night cream', 4)">ថែមក្នុងកន្ត្រក</button>
+        </div>
+        
+        <div class="product" data-name="សេរ៉ូម MN">
+          <img src="https://i.ibb.co/2X52H4x/IMG-3780.jpg">
+          <p>សេរ៉ូម MN</p>
+          <span class="stock-status in-stock">● មានក្នុងស្តុក</span>
+          <p style="color: var(--primary-color); font-weight: bold;">$10</p>
+          <button class="add-btn" onclick="addToCart('សេរ៉ូម MN', 10)">ថែមក្នុងកន្ត្រក</button>
+        </div>
+        
+        <div class="product" data-name="Body Whitening">
+          <img src="https://i.ibb.co/SDb704wY/IMG-3782.png">
+          <p>Body Whitening</p>
+          <span class="stock-status in-stock">● មានក្នុងស្តុក</span>
+          <p style="color: var(--primary-color); font-weight: bold;">$10</p>
+          <button class="add-btn" onclick="addToCart('Body Whitening', 10)">ថែមក្នុងកន្ត្រក</button>
+        </div>
+     
+        <div class="product" data-name="Vaseline">
+          <img src="https://i.ibb.co/Rk3Wc812/IMG-3783.jpg">
+          <p>Vaseline</p>
+          <span class="stock-status in-stock">● មានក្នុងស្តុក</span>
+          <p style="color: var(--primary-color); font-weight: bold;">$10</p>
+          <button class="add-btn" onclick="addToCart('Vaseline', 10)">ថែមក្នុងកន្ត្រក</button>
+        </div>
+     
+        <div class="product" data-name="Century Beauty">
+          <img src="https://i.ibb.co/hRHTz4tK/IMG-3784.jpg">
+          <p>Century Beauty</p>
+          <span class="stock-status in-stock">● មានក្នុងស្តុក</span>
+          <p style="color: var(--primary-color); font-weight: bold;">$10</p>
+          <button class="add-btn" onclick="addToCart('Century Beauty', 10)">ថែមក្នុងកន្ត្រក</button>
+        </div>
+     
+        <div class="product" data-name="Body Lotion">
+          <img src="https://i.ibb.co/0yqLw8Yh/IMG-3785.jpg">
+          <p>Body Lotion</p>
+          <span class="stock-status in-stock">● មានក្នុងស្តុក</span>
+          <p style="color: var(--primary-color); font-weight: bold;">$10</p>
+          <button class="add-btn" onclick="addToCart('Body Lotion', 10)">ថែមក្នុងកន្ត្រក</button>
+        </div>
+     </div>
+    </div>
+     
+    <div id="cart-section" class="section">
+     <div class="cart-card">
+        <h3>🛒 ទំនិញដែលអ្នកបានជ្រើសរើស</h3>
+        <div id="cart-content"></div>
+        <div id="order-form" style="display: none; margin-top: 20px; border-top: 2px solid #f0f0f0; padding-top: 20px;">
+          
+          <div id="summary-display" style="padding: 10px 0;"></div>
+
+          <input type="text" id="buyerName" placeholder="បញ្ចូលឈ្មោះរបស់អ្នក">
+          <input type="tel" id="phone" placeholder="លេខទូរសព្ទ 0xx xxx xxx">
+          <textarea id="address" placeholder="ទីតាំងសម្រាប់ដឹកជញ្ជូន"></textarea>
+          <div style="background: #fff9fb; padding: 15px; border-radius: 8px; border: 1px dashed var(--secondary-color); margin-bottom: 15px;">
+            <p style="margin: 0 0 10px;"><b>បង់ប្រាក់មកកាន់ QR នេះ:</b></p>
+            <img src="https://i.ibb.co/7x2KgVt5/IMG-0820.jpg" width="120" style="border-radius: 10px;">
+            <p style="margin: 10px 0 5px;"><b style="color: var(--primary-color);">ភ្ជាប់រូបភាពវិក្កយបត្រ:</b></p>
+            <input type="file" id="paymentScreenshot" accept="image/*">
+          </div>
+          <button class="confirm-btn" id="submitBtn" onclick="sendToTelegramWithImage()">បញ្ជាក់ការបញ្ជាទិញ</button>
+        </div>
+     </div>
+    </div>
+</div>
+
+<script>
+ let cart = [];
+ const DELIVERY_FEE = 1.5; // តម្លៃដឹកជញ្ជូន
+ 
+ function startApp() {
+    document.getElementById('splash-screen').style.opacity = '0';
+    setTimeout(() => {
+        document.getElementById('splash-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+    }, 500);
+ }
+
+ function showSection(sectionId) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active-section'));
+    document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active-section');
+    if(sectionId === 'products-section') document.getElementById('tab-products').classList.add('active');
+    if(sectionId === 'cart-section') document.getElementById('tab-cart').classList.add('active');
+ }
+
+ function addToCart(name, price) {
+    const found = cart.find(item => item.name === name);
+    if (found) { found.qty++; } else { cart.push({ name, price, qty: 1 }); }
+    updateCartUI();
+    const btn = event.target;
+    btn.innerText = "បន្ថែមរួចរាល់";
+    setTimeout(() => btn.innerText = "ថែមក្នុងកន្ត្រក", 800);
+ }
+
+ function updateCartUI() {
+    document.getElementById('cart-count').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+    const cartContent = document.getElementById('cart-content');
+    const orderForm = document.getElementById('order-form');
+    const summaryDisplay = document.getElementById('summary-display');
+    
+    if (cart.length === 0) {
+      cartContent.innerHTML = '<div class="empty-cart-msg">មិនទាន់មានទំនិញក្នុងកន្ត្រកនៅឡើយទេ។</div>';
+      orderForm.style.display = 'none';
+      return;
+    }
+
+    orderForm.style.display = 'block';
+    let subtotal = 0;
+    let html = `<table><thead><tr><th>មុខទំនិញ</th><th>ចំនួន</th><th>សរុប</th><th></th></tr></thead><tbody>`;
+    cart.forEach((item, index) => {
+      subtotal += item.price * item.qty;
+      html += `<tr><td>${item.name}</td><td><button onclick="changeQty(${index}, -1)">-</button> ${item.qty} <button onclick="changeQty(${index}, 1)">+</button></td><td>$${item.price * item.qty}</td><td><button onclick="removeFromCart(${index})" style="color:red; border:none; background:none;">✖</button></td></tr>`;
+    });
+    html += `</tbody></table>`;
+    cartContent.innerHTML = html;
+
+    // បង្ហាញព័ត៌មានតម្លៃសរុប និង ដឹកជញ្ជូន
+    let grandTotal = subtotal + DELIVERY_FEE;
+    summaryDisplay.innerHTML = `
+        <div class="summary-line"><span>តម្លៃទំនិញសរុប:</span> <span>$${subtotal.toFixed(2)}</span></div>
+        <div class="summary-line" style="color: #e67e22;"><span>សេវាដឹកជញ្ជូន:</span> <span>$${DELIVERY_FEE.toFixed(2)}</span></div>
+        <div class="total-box">តម្លៃសរុបត្រូវបង់: $<span id="grandTotal">${grandTotal.toFixed(2)}</span></div>
+    `;
+ }
+
+ function changeQty(index, amount) {
+    if (cart[index].qty + amount > 0) cart[index].qty += amount;
+    else if (confirm("លុបទំនិញនេះ?")) cart.splice(index, 1);
+    updateCartUI();
+ }
+
+ function removeFromCart(index) {
+    if (confirm("លុបទំនិញនេះចេញពីកន្ត្រក?")) { cart.splice(index, 1); updateCartUI(); }
+ }
+
+ function searchProduct() {
+    const kw = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('.product').forEach(p => {
+      p.style.display = p.getAttribute('data-name').toLowerCase().includes(kw) ? 'block' : 'none';
+    });
+ }
+
+ async function sendToTelegramWithImage() {
+    const botToken = "8419443605:AAFjtNT93qDfdhNPZloBY0d5hQ25VoA5dK8"; 
+    const chatId = "1844112848";     
+    const name = document.getElementById('buyerName').value;
+    const phone = document.getElementById('phone').value;
+    const address = document.getElementById('address').value;
+    const photo = document.getElementById('paymentScreenshot').files[0];
+
+    if (!name || !phone || !photo || cart.length === 0) { alert("សូមបំពេញព័ត៌មាន និងភ្ជាប់រូបភាពវិក្កយបត្រ!"); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.innerText = "កំពុងផ្ញើ..."; btn.disabled = true;
+
+    let itemsText = "";
+    let subtotal = 0;
+    cart.forEach(i => {
+        itemsText += `\n- ${i.name} (${i.qty}x$${i.price})`;
+        subtotal += i.qty * i.price;
+    });
+
+    const total = (subtotal + DELIVERY_FEE).toFixed(2);
+    
+    // រៀបចំសារផ្ញើទៅ Telegram
+    const caption = `🔔 New Order 🔔\n` + 
+                    ` ឈ្មោះ: ${name}\n` + 
+                    ` លេខ: ${phone}\n` + 
+                    ` អាស័យដ្ឋាន: ${address}\n` + 
+                    ` ទំនិញ: ${itemsText}\n` +
+                    `------------------\n` +
+                    ` តម្លៃទំនិញ: $${subtotal.toFixed(2)}\n` +
+                    ` សេវាដឹក: $${DELIVERY_FEE.toFixed(2)}\n` +
+                    ` សរុបបង់: $${total}`;
+
+    const formData = new FormData();
+    formData.append("chat_id", chatId);
+    formData.append("photo", photo);
+    formData.append("caption", caption);
+
+    try {
+      const resp = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, { method: "POST", body: formData });
+      if (resp.ok) { alert("អរគុណសម្រាប់ការកម្ម៉ង់!ក្រុមការងារនឹងទាក់ទងទៅបងឆាប់ៗ"); location.reload(); }
+    } catch (e) { alert("កំហុសអ៊ីនធឺណិត!"); }
+    finally { btn.innerText = "បញ្ជាក់ការបញ្ជាទិញ"; btn.disabled = false; }
+ }
+</script>
+</body>
+</html>

@@ -164,9 +164,9 @@
         <div class="product" data-name="MN night cream">
           <img src="https://i.ibb.co/MD6HvPdV/IMG-3781.jpg">
           <p>MN night cream</p>
-          <span class="stock-status in-stock">● មានក្នុងស្តុក</span>
+          <span class="stock-status out-stock-text">● គ្មានក្នុងស្តុក</span>
           <p style="color: var(--primary-color); font-weight: bold;">$4</p>
-          <button class="add-btn" onclick="addToCart('MN night cream', 4)">ថែមក្នុងកន្ត្រក</button>
+          <button class="add-btn" onclick="addToCart('MN night cream', 4)"disabled>គ្មានក្នុងស្តុក</button>
         </div>
         
         <div class="product" data-name="សេរ៉ូម MN">
@@ -210,10 +210,10 @@
         </div>
         <div class="product" data-name="Natural Skin ">
           <img src="https://i.ibb.co/BKfd0h2c/photo-2026-01-17-11-57-52.jpg">
-          <p>Natural Skin </p>
+          <p>ural Skin </p>
           <span class="stock-status in-stock">● មានក្នុងស្តុក</span>
-          <p style="color: var(--primary-color); font-weight: bold;">$3.5</p>
-          <button class="add-btn" onclick="addToCart('Natural Skin ', 3.5)">ថែមក្នុងកន្ត្រក</button>
+          <p style="color: var(--primary-color); font-weight: bold;">$2.5</p>
+          <button class="add-btn" onclick="addToCart('Natural Skin ', 2.5)">ថែមក្នុងកន្ត្រក</button>
         </div>
         <div class="product" data-name="រំយោល">
           <img src="https://i.ibb.co/Qv0DkGZX/601857391-122232099044057995-4661654979683015785-n.jpg">
@@ -281,9 +281,9 @@
          <div class="product" data-name="ផ្កាឈូក">
           <img src="https://i.ibb.co/zHnQ34kr/547415666-122219466218057995-6949687194827031845-n.jpg">
           <p>ផ្កាឈូក</p>
-          <span class="stock-status -stock-text">● មានក្នុងស្តុក</span>
+          <span class="stock-status out-stock-text">● អស់ស្តុក</span>
           <p style="color: var(--primary-color); font-weight: bold;">$10</p>
-          <button class="add-btn" onclick="addToCart('ផ្កាឈូក', 10)">ថែមក្នុងកន្ត្រក</button>
+          <button class="add-btn" onclick="addToCart('ផ្កាឈូក', 10)" disabled>អស់ស្តុក</button>
         </div>
      </div>
     </div>
@@ -419,7 +419,7 @@
                     `------------------\n` +
                     ` តម្លៃទំនិញ: $${subtotal.toFixed(2)}\n` +
                     ` សេវាដឹក: $${DELIVERY_FEE.toFixed(2)}\n` +
-                    ` សរុបបង់: $${total}`;
+                    ` សរុបប្រាក់ត្រូវបង់: $${total}`;
 
     const formData = new FormData();
     formData.append("chat_id", chatId);
